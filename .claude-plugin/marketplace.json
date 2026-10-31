@@ -1,0 +1,8 @@
+{
+  "name": "futhrevo-mods",
+  "owner": { "name": "futhrevo" },
+  "plugins": [
+    { "name": "plain-english", "source": "./plain-english" },
+    { "name": "pr-tracker", "source": "./pr-tracker" }
+  ]
+}
