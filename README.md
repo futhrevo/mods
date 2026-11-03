@@ -4,6 +4,7 @@ Claude Code mods by futhrevo. Add this marketplace once, then install any mod fr
 
 | Mod | What it does |
 |---|---|
+| `braindump` | Rewrites long voice-dictated prompts (Wispr Flow etc.) into a clear prompt before Claude reads it. `/braindump` toggles. |
 | `plain-english` | `/plain` rewrites Claude's last reply in plain English, with no jargon. Costs nothing until you run it. |
 | `pr-tracker` | Shows your GitHub PRs (merge state, review, CI, comments) in a pane and above the prompt. Needs `gh`. |
 
@@ -12,6 +13,7 @@ Claude Code mods by futhrevo. Add this marketplace once, then install any mod fr
 At the prompt of a Claude Code terminal session:
 
 ```
+/plugin install braindump --marketplace futhrevo/mods
 /plugin install plain-english --marketplace futhrevo/mods
 /plugin install pr-tracker --marketplace futhrevo/mods
 ```

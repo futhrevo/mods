@@ -1,0 +1,1 @@
+{ "name": "braindump", "version": "0.1.0", "description": "Rewrites long voice-dictated prompts (Wispr Flow etc.) into a clear prompt before Claude reads it; raw dictation kept as hidden context." }
