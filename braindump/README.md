@@ -8,6 +8,9 @@ and order the asks, while keeping every name, number, path, command and pasted b
 Claude gets the cleaned prompt; your raw dictation rides along as hidden context, so nothing is
 lost if the rewrite slips.
 
+- Text inside ``` fences and inside HTML-style tags (`<hc>…</hc>`, `<pasted_content>…`) is never sent
+  to the rewriter: it is swapped for a marker and put back byte-for-byte. If the rewrite loses a
+  marker, the prompt is sent as typed. Only the words outside those spans count toward the 30.
 - Short prompts, slash commands and prompts over 12,000 characters are sent as typed.
 - If the rewrite fails or takes over 20 s, the prompt is sent as typed and a toast says why.
 - A toast shows each rewrite (`Brain dump cleaned: 182 → 64 words`).
