@@ -14,40 +14,58 @@ const PANE = {
   },
 } as const
 
-const LIST = '# 1 thing needs you\n\n## 1. Pick a model\n**Type:** Decision'
+const LIST = '# 1 thing needs you\n\n## 1. Pick a model\n**Type:** Decision\n\n---\n## Done by the agent (1)\n- ran tests'
 
-function engine(on: any, seen: any, reply: any) {
+function engine(on: any, seen: any) {
   on('command.register', () => ({ value: { command: 'actions' } }))
+  on('tool.register', () => ({ value: { tool: 'mcp__actions__publish_action_items' } }))
   on('ui.open', () => ({ value: { isPlaced: true } }))
-  on('ui.status', () => ({ value: undefined }))
-  on('model.fork', (_: any, e: any) => {
-    seen.prompt = e.prompt
-    return { value: reply }
+  on('clock.after', () => ({ value: undefined }))
+  on('prompt.submit', (_: any, e: any) => {
+    seen.submitted = e.text
+    return { text: e.text }
   })
+  on('prompt.compose', () => ({ sections: [{ id: 'intro', text: 'base', scope: 'shared' }] }))
   on('session.start', (_: any, e: any) => ({ cwd: e.cwd }))
 }
 
-test('/actions forks the conversation and shows the list in the pane', async ($, on) => {
-  const seen: any = {}
-  engine(on, seen, { isAnswered: true, text: LIST, usage: { input_tokens: 1, output_tokens: 1 } })
-  await $.session.start({ cwd: '/', surface: 'terminal', isInteractive: true })
-  const out: any = await $.command.run({ command: 'actions', args: '' } as any)
+const start = ($: any) => $.session.start({ cwd: '/', surface: 'terminal', isInteractive: true })
 
-  expect(seen.prompt).toContain('needs ME, the human')
-  expect(out.text).toBe('1 thing needs you — see the "Your action items" pane.')
+test('/actions hands the agent the do-then-publish job, with the wiki path', { options: { wikiDir: '/wiki' } }, async ($, on) => {
+  const seen: any = {}
+  engine(on, seen)
+  await start($)
+  const out: any = await $.command.run({ command: 'actions', args: '' } as any)
+  await new Promise(r => setTimeout(r, 200))
+
+  expect(out.text).toContain('Your action items')
+  expect(seen.submitted).toContain('Do every AGENT item now')
+  expect(seen.submitted).toContain('"/wiki"')
+  expect(seen.submitted).toContain('mcp__actions__publish_action_items')
+})
+
+test('the publish tool fills the pane', async ($, on) => {
+  engine(on, {})
+  await start($)
+  const r: any = await $.tool.call({ tool: 'mcp__actions__publish_action_items', markdown: LIST } as any)
+  expect(r.result).toBe('Published to the "Your action items" pane.')
+
   const ui = await $.ui.mount({ ...PANE, surface: 'terminal' })
   expect((await ui.find({ type: 'Markdown' }))?.props?.text).toBe(LIST)
   await ui.unmount()
 })
 
-test('a failed fork says why and keeps the pane usable', async ($, on) => {
-  const seen: any = {}
-  engine(on, seen, { isAnswered: false, reason: 'nothing-to-fork', usage: { input_tokens: 0, output_tokens: 0 } })
-  await $.session.start({ cwd: '/', surface: 'terminal', isInteractive: true })
-  const out: any = await $.command.run({ command: 'actions', args: '' } as any)
+test('an empty publish is refused', async ($, on) => {
+  engine(on, {})
+  await start($)
+  const r: any = await $.tool.call({ tool: 'mcp__actions__publish_action_items', markdown: '  ' } as any)
+  expect(r.deny).toBe('markdown is empty')
+})
 
-  expect(out.text).toBe('Could not collect action items (nothing-to-fork).')
-  const ui = await $.ui.mount({ ...PANE, surface: 'terminal' })
-  expect((await ui.find({ type: 'Text', text: /Run \/actions/ }))?.text).toBe('Run /actions to collect what needs you.')
-  await ui.unmount()
+test('every session gets the do-it-yourself rule in its system prompt', async ($, on) => {
+  engine(on, {})
+  await start($)
+  const r: any = await $.prompt.compose({ model: 'claude-opus-5-5', promptModel: 'claude-opus-5-5', surfaces: ['terminal'], tools: [], outputStyle: null, traits: [], sections: [] } as any)
+  expect(r.sections.at(-1).id).toBe('actions:do-it-yourself')
+  expect(r.sections.at(-1).text).toContain('strictly needs a human')
 })

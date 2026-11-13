@@ -1,1 +1,15 @@
-{ "name": "actions", "version": "0.1.0", "description": "/actions lists everything in the conversation that needs you, in a pane: decisions with options, tasks as plain step-by-step instructions.", "types": "./types/index.d.ts" }
+{
+  "name": "actions",
+  "version": "0.2.0",
+  "description": "/actions has the agent do what it can itself, then lists what strictly needs you in a pane: decisions with options, tasks as plain steps.",
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "wikiDir": {
+      "type": "string",
+      "title": "Knowledge wiki folder",
+      "description": "Path to your notes/wiki folder (~ allowed); consulted for past decisions and preferences when a decision needs you. Skipped if the folder does not exist; empty to turn off.",
+      "default": "~/Library/Mobile Documents/com~apple~CloudDocs/llmwiki",
+      "required": false
+    }
+  }
+}

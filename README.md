@@ -5,7 +5,7 @@ Claude Code mods by futhrevo. Add this marketplace once, then install any mod fr
 | Mod | What it does |
 |---|---|
 | `braindump` | Rewrites long voice-dictated prompts (Wispr Flow etc.) into a clear prompt before Claude reads it. `/braindump` toggles. |
-| `actions` | `/actions` lists everything in the conversation that needs you, in a pane: decisions with options, tasks as plain step-by-step instructions. |
+| `actions` | Agent does what it can itself; `/actions` lists what strictly needs you in a pane: decisions with options (checked against your wiki), tasks as plain steps. |
 | `plain-english` | `/plain` rewrites Claude's last reply in plain English, with no jargon. Costs nothing until you run it. |
 | `pr-tracker` | Shows your GitHub PRs (merge state, review, CI, comments) in a pane and above the prompt. Needs `gh`. |
 
