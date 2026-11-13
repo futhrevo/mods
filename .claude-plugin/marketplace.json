@@ -4,6 +4,7 @@
   "plugins": [
     { "name": "plain-english", "source": "./plain-english" },
     { "name": "pr-tracker", "source": "./pr-tracker" },
-    { "name": "braindump", "source": "./braindump" }
+    { "name": "braindump", "source": "./braindump" },
+    { "name": "actions", "source": "./actions" }
   ]
 }

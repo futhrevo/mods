@@ -1,0 +1,1 @@
+{ "name": "actions", "version": "0.1.0", "description": "/actions lists everything in the conversation that needs you, in a pane: decisions with options, tasks as plain step-by-step instructions.", "types": "./types/index.d.ts" }
